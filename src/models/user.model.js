@@ -39,7 +39,7 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Password is required"],
     },
-    refreshtoken:{
+    refreshToken:{
         type: String,
     }  
 },{timestamps: true});
@@ -48,7 +48,7 @@ userSchema.pre("save", async function(next){
     if(!this.isModified("password")) {  //this line checks if the       password field is modified or not. If it is not modified, then we don't need to hash it again. We can just return next() to move to the next middleware. otherwiswe it will hash the password again and again which is not required.
         return next();
     } 
-    this.password = bcrypt.hash(this.password,10);
+    this.password = await bcrypt.hash(this.password,10);
     next();
  })// this hook is used to hash the password before saving it to the database
 
