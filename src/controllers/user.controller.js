@@ -32,9 +32,16 @@ const registerUser = asyncHandler(async (req, res, next) => {
         throw new ApiError("User with email or username already exists", 409);  //these all errors we are writing
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path; //Multer gives us the path of the uploaded file in req.files object. We are using optional chaining '?' operator to check if the file is uploaded or not. If the file is not uploaded then it will return undefined.
-    const coverImageLocalPath = req.files?.cover[0]?.path; //Multer gives us the path of the uploaded file in req.files object. We are using optional chaining '?' operator to check if the file is uploaded or not. If the file is not uploaded then it will return undefined.
+    const avatarLocalPath = req.files?.avatar?.[0]?.path; //Multer gives us the path of the uploaded file in req.files object. We are using optional chaining '?' operator to check if the file is uploaded or not. If the file is not uploaded then it will return undefined.
+    // this is one way
+    // // const coverImageLocalPath = req.files?.cover[0]?.path; //Multer gives us the path of the uploaded file in req.files object. We are using optional chaining '?' operator to check if the file is uploaded or not. If the file is not uploaded then it will return undefined.
     
+    //classical way
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
+
     if(!avatarLocalPath){
         throw new ApiError("Avatar is required", 400); //this is a good approach to check if any field is empty or not. It will check if any field is empty or not and if it is empty then it will throw an error.
     }
@@ -62,15 +69,15 @@ const registerUser = asyncHandler(async (req, res, next) => {
     //ye upr vale select method hum vo pass krte hai jo fields hume nhi chahiye 
     
     if(!createdUser){
-        throw new ApiError(500, "Something went wrong while registering the user")
+        throw new ApiError("Something went wrong while registering the user" , 500)
     }
 
     //at last we are returning the response
     return res.status(201).json(
-        new ApiResponse(200, createdUser , "User registered successfully")
+        new ApiResponse(201, createdUser, "User registered successfully") //this ApiResponse is a utility you made it in utils
     )
 
-    
+
 })
 
 export {registerUser};

@@ -13,7 +13,7 @@ router.route("/register").post(
             maxCount:1
         },
         {
-            name:"cover",
+            name:"coverImage",
             maxCount:1
         }
     ]), //which allows the server to use the upload middleware for the route /register. The upload middleware is used to handle file uploads. The fields method is used to specify the fields that will be uploaded.
