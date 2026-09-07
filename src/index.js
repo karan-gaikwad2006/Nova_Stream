@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
-import mongoose from "mongoose";
-import express from "express";
-const app = express();
+// import mongoose from "mongoose";
+// import express from "express";
+import { app } from "./app.js";
 // import {DB_NAME} from "./constants.js";
 
 dotenv.config({
@@ -46,7 +46,4 @@ connectDB() //As connectDB is an async function therefore async function returns
 */
 app.get("/", (req, res) => {
     res.send("Hello World");
-});
-app.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${process.env.PORT}`);
 });

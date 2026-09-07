@@ -13,4 +13,14 @@ app.use(cookieParser());// iska mtlb hai ki mein server se user ke browser me co
 app.use(express.json({limit:"16kb"})); //which allows the server to accept JSON data from the client. It is set to true because we want to allow the server to accept JSON data from the client.
 app.use(express.urlencoded({extended:true, limit:"16kb"})); //which allows the server to accept URL encoded data from the client. It is set to true because we want to allow the server to accept URL encoded data from the client.
 app.use(express.static("public")); //which allows the server to serve static files from the public folder. It is set to true because we want to allow the server to serve static files from the public folder.
+
+
+//routes import
+import userRouter from './routes/user.routes.js';
+
+
+
+// routes declaration
+app.use("/api/v1/user" , userRouter); //which allows the server to use the userRouter for all the routes starting with /user. It is set to true because we want to allow the server to use the userRouter for all the routes starting with /user.
+
 export {app};
