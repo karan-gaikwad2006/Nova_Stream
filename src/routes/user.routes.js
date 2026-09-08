@@ -1,7 +1,9 @@
 import {Router} from 'express';
-import {registerUser} from '../controllers/user.controller.js';
+import {loginUser, logoutUser, registerUser} from '../controllers/user.controller.js';
 
 import {upload} from '../middlewares/multer.middleware.js';
+import { verifyJWT } from '../middlewares/auth.middleware.js';
+
 const router = Router();
 
 // router.route("/register").post(registerUser); //which allows the server to use the registerUser function for the route /register. It is set to true because we want to allow the server to use the registerUser function for the route /register.
@@ -19,6 +21,11 @@ router.route("/register").post(
     ]), //which allows the server to use the upload middleware for the route /register. The upload middleware is used to handle file uploads. The fields method is used to specify the fields that will be uploaded.
     registerUser //jo bhi method execute ho raha usse just pehle middleware inject krte hai
 );
+
+router.route("/login").post(loginUser)
+
+//secured routes
+router.route("/logout").post(verifyJWT, logoutUser)
 
 
 export default router;

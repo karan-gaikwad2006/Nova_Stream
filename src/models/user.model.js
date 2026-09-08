@@ -53,13 +53,13 @@ userSchema.pre("save", async function(next){
  })// this hook is used to hash the password before saving it to the database
 
 userSchema.methods.isPasswordCorrect = async function(password){ //This is the custom method i made with .methods to check if the password is correct or not. It takes the password as an argument and compares it with the hashed password stored in the database. It returns true if the password is correct, otherwise false.
-    return await bcrypt.compare(password, this.password);
+    return await bcrypt.compare(password, this.password); //this.passwrod is the one saved in the DB
 }
 
 userSchema.methods.generateAccessToken = function(){ //This is the custom method i made with .methods to generate the access token. It takes the user id as an argument and generates the access token using the jwt.sign() method. It returns the access token.
        return jwt.sign(
         {
-            id: this._id,
+            _id: this._id,
             email: this.email,
             username: this.username,
             fullname: this.fullname,
@@ -74,7 +74,7 @@ userSchema.methods.generateAccessToken = function(){ //This is the custom method
 userSchema.methods.generateRefreshToken = function(){ //This is the custom method i made with .methods to generate the refresh token. It takes the user id as an argument and generates the refresh token using the jwt.sign() method. It returns the refresh token.
     return jwt.sign(
         {
-            id: this._id,
+            _id: this._id,
         }, 
         process.env.REFRESH_TOKEN_SECRET, 
         {
@@ -84,3 +84,6 @@ userSchema.methods.generateRefreshToken = function(){ //This is the custom metho
 }
 
 export const User = mongoose.model('User', userSchema);
+
+//see the methods which use declare using .methods krke na that are used with small 'user' which you do when const user = User.findOne()
+//The methods like findOne, create, these are provided by mongoose so that are ysed with capital 'User' that you do export Const User
