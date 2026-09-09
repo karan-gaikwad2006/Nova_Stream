@@ -1,0 +1,7 @@
+$kind: collection
+variables:
+  script: ""
+auth:
+  - id: 077b5a44-1a1b-4f84-8d4f-ae8457097075
+    type: apikey
+    name: apikey auth

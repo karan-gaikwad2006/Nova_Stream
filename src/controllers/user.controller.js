@@ -67,8 +67,10 @@ const registerUser = asyncHandler(async (req, res, next) => {
     }
 
     //now upload the avatar and cover image to cloudinary and get the url of the uploaded image and save it to the database.
-    
+    console.log("Avatar local path:", avatarLocalPath);
+
     const avatar = await uploadOnCloudinary(avatarLocalPath); //here uploadOnCloudinary is a function which will upload the file to cloudinary and return the url of the uploaded file. We are passing the local path of the uploaded file to this function.
+    
     const coverImage = coverImageLocalPath ? await uploadOnCloudinary(coverImageLocalPath) : null; //if cover image is not uploaded then it will be null.
 
     //check if avatar is uploaded or not. If avatar is not uploaded then it will throw an error.

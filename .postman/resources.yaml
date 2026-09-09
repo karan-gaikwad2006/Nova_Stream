@@ -1,0 +1,8 @@
+workspace:
+  id: 9450fc4d-a407-4915-82ff-0da1632c9a72
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/ChaiAurBackend: 54312116-9b5e4873-4759-4429-a81b-105a983a6a86

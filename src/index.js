@@ -1,13 +1,16 @@
-import dotenv from "dotenv";
+import "dotenv/config";
+
+// import dotenv from "dotenv";
+// dotenv.config({
+//     path: "./.env"
+// })
 import connectDB from "./db/index.js";
 // import mongoose from "mongoose";
 // import express from "express";
-import { app } from "./app.js";
+
 // import {DB_NAME} from "./constants.js";
 
-dotenv.config({
-    path: "./.env"
-})
+import { app } from "./app.js";
 
 connectDB() //As connectDB is an async function therefore async function returns a promise so we can use .then() and .catch()
     .then(() => {
@@ -22,6 +25,7 @@ connectDB() //As connectDB is an async function therefore async function returns
     .catch((err) => {
         console.log("Mongo DB connection failed !!!", err);
     })
+
 
 
 //This is the first approach of doing the

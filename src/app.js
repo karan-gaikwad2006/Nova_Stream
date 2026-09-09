@@ -23,4 +23,15 @@ import userRouter from './routes/user.routes.js';
 // routes declaration
 app.use("/api/v1/user" , userRouter); //which allows the server to use the userRouter for all the routes starting with /user. It is set to true because we want to allow the server to use the userRouter for all the routes starting with /user.
 
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Something went wrong";
+
+    res.status(statusCode).json({
+        success: false,
+        message,
+        errors: err.error || [],
+        stack: process.env.NODE_ENV === "development" ? err.stack : undefined
+    });
+});
 export {app};

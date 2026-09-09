@@ -1,0 +1,14 @@
+$kind: http-request
+description: ""
+url: "{{script}}/user/logout"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\":\"h@hc.com\",\r
+
+    \    \"password\":\"12345678\"\r
+
+    }"
+order: 1578863642543378

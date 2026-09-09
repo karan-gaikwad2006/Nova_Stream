@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{script}}/register"
+method: POST
+order: 1000
