@@ -44,11 +44,12 @@ const userSchema = new Schema({
     }  
 },{timestamps: true});
 
-userSchema.pre("save", async function(){
+userSchema.pre("save", async function(next){
     if(!this.isModified("password")) {  //this line checks if the       password field is modified or not. If it is not modified, then we don't need to hash it again. We can just return next() to move to the next middleware. otherwiswe it will hash the password again and again which is not required.
-        return ;
+        return next();
     } 
     this.password = await bcrypt.hash(this.password,10);
+    next()
  })// this hook is used to hash the password before saving it to the database
 
 userSchema.methods.isPasswordCorrect = async function(password){ //This is the custom method i made with .methods to check if the password is correct or not. It takes the password as an argument and compares it with the hashed password stored in the database. It returns true if the password is correct, otherwise false.
