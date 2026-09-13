@@ -379,7 +379,89 @@ const updateUserCoverImage = asyncHandler(async(req, res)=>{
 
 })
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+    //jb apko kisi channel pe jana hai tb app uss channel ki url pe jaate ho
+    const {username} = req.params
 
+    if(!username?.trim()){
+        throw new ApiError("Username is missing", 400)
+    }
+
+    //yaha pe app kya kr rahe ho user ko bula kr fir id ke basis pe aggregation laga rahe ho
+    // User.find({username})
+
+    //aggregation pipeline
+    const channel = await User.aggregate([ //ye arrays mein result return krta hai function 
+        //iss user ko find kroo subcriptions model mein se
+        {
+            $match: {
+                username : username?.toLowerCase()
+            }
+        },
+        //kitne subcribers hai iss user ke
+        {
+            $lookup: {
+                from: "subscriptions", //iss model mein se dekho mongo db mein
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+        //kitne subscribe kiye hai iss user ne
+        {
+            $lookup: {
+                from: "subscriptions", //iss model mein se dekho mongo db mein
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        // to add both the field with the original fields or the user model(table)
+        {
+            $addFields: {
+                subscribersCount:{
+                    $size: "$subscribers"
+                },
+
+                channelsSubscribedToCount:{
+                    $size: "$subscribedTo"
+                },
+                // to check whether i subscribed a channel mein dekhunga uss channel ke subscribers mein mai hu ya nhi
+                isSubscribed:{ 
+                    $cond :{
+                       if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                       then: true,  // agr if true hai toh isSubscribed ke andr ye value jai 
+                       else: false // agr if true hai toh isSubscribed ke andr ye value jai 
+                    }
+                }
+            }
+        },
+        //saari values ko nhi bs selected chije dunga
+        {
+            $project:{
+                fullname: 1,
+                username: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1,
+            }
+        }
+    ])
+    consolelog("channel data in getUserChannelProfile", channel)
+
+    if(!channel?.length){
+        throw new ApiError("Channel does not exists", 400)   
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, channel[0], "User channel fetched successfully")
+    )
+    
+})
 
 export {
     registerUser,
@@ -390,5 +472,6 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile
 };
