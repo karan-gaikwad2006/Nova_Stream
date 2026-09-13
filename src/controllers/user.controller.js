@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js'
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { ApiResponse } from '../utils/ApiResponse.js';
 import jwt from "jsonwebtoken"
+import mongoose from 'mongoose';
 
 
 const generateAccessAndRefreshTokens = async (userId) => { //we are amking this method as this can be used many times and at many places
@@ -379,6 +380,7 @@ const updateUserCoverImage = asyncHandler(async(req, res)=>{
 
 })
 
+//aggregate pipeline
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     //jb apko kisi channel pe jana hai tb app uss channel ki url pe jaate ho
     const {username} = req.params
@@ -449,7 +451,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
             }
         }
     ])
-    consolelog("channel data in getUserChannelProfile", channel)
+    console.log("channel data in getUserChannelProfile", channel)
 
     if(!channel?.length){
         throw new ApiError("Channel does not exists", 400)   
@@ -460,8 +462,68 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     .json(
         new ApiResponse(200, channel[0], "User channel fetched successfully")
     )
-    
+
 })
+
+//nested aggregate pipeline
+const getWatchHistory = asyncHandler(async (req, res) => {
+    const user = await User.aggregate([
+        {
+            $match:{
+                // _id: req.user._id     we cant do this because rsn in notebook and aggregation pipeline ka code directly hi jaata hai mongoDB usko ObjectId(" _ ") mein use nhi krta
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+                $lookup: {
+                    from: "videos",
+                    localField: "watchHistory",
+                    foreignField: "_id",
+                    as: "watchHistory",
+                    pipeline: [
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "owner",
+                                foreignField: "_id",
+                                as: "owner",
+                                pipeline:[
+                                    {
+                                        $project:{
+                                            fullname: 1,
+                                            username:  1,
+                                            avatar: 1
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            $addFields:{
+                                owner:{
+                                    $first: "$owner"
+                                }
+                            }
+                        }
+                    ]
+                }
+        }
+
+
+
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            user[0].watchHistory,
+            "Watch History fetched successfully"
+        )
+    )
+})
+
 
 export {
     registerUser,
@@ -473,5 +535,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    getUserChannelProfile
+    getUserChannelProfile,
+    getWatchHistory
 };
